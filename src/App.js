@@ -46,7 +46,7 @@ function LoggedIn() {
   }, [])
 
   return (
-    <div>
+    <div className="content">
       <h2>Data Received from server</h2>
       <h3>{dataFromServer}</h3>
     </div>
@@ -67,46 +67,39 @@ function UserLogin() {
   }
 
   return (
-    <div className="content">
+    <div className="header">
       {!loggedIn ? (<LogIn login={login} />) :
-        (<div>
-          <LoggedIn />
-          <button onClick={logout}>Logout</button>
-        </div>)}
+        (
+          <Router>
+            <div>
+              <Header />
+              <div>
+                <Switch>
+                  <Route path="/user">
+                    <User />
+                  </Route>
+                  <Route path="/admin">
+                    <Admin />
+                  </Route>
+                </Switch>
+              </div>
+            </div>
+          </Router>
+        )
+      }
     </div>
   )
 }
 
 function App() {
   return (
-    <Router className="content">
-      <div>
-        <Header />
-        <div>
-          <Switch>
-            <Route exact path="/">
-              <UserLogin />
-            </Route>
-            <Route path="/user">
-              <User />
-            </Route>
-            <Route path="/admin">
-              <Admin />
-            </Route>
-          </Switch>
-        </div>
-      </div>
-    </Router>
+    <UserLogin />
   )
 }
 
 function Header(prop) {
   return (
     <ul className="header">
-
-      <li>
-        <NavLink exact activeClassName="selected" to="/">Login</NavLink>
-      </li>
       <li>
         <NavLink activeClassName="selected" to="/user">User</NavLink>
       </li>
