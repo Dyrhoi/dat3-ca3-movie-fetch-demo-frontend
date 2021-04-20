@@ -3,6 +3,7 @@ import facade from './apiFacade'
 import React, { useState, useEffect } from "react"
 import './styles/style1.css'
 import './styles/style2.css'
+import * as userFacade from './user'
 import {
   BrowserRouter as Router,
   Switch,
@@ -56,38 +57,44 @@ function LoggedIn() {
 
 function UserLogin() {
   const [loggedIn, setLoggedIn] = useState(false)
-
+  const [user, setUser] = useState(null)
   const logout = () => {
     facade.logout()
     setLoggedIn(false)
+    setUser(null);
   }
   const login = (user, pass) => {
     facade.login(user, pass)
-      .then(res => setLoggedIn(true));
+      .then(res => {
+        setLoggedIn(true)
+        setUser(userFacade.getInfo(facade.getToken()))
+      });
   }
 
   return (
     <div className="header">
       {!loggedIn ? (<LogIn login={login} />) :
         (
-          <Router>
+          < Router >
             <div>
-              <Header />
+              <Header user={user} />
               <div>
                 <Switch>
-                  <Route path="/user">
-                    <User />
-                  </Route>
-                  <Route path="/admin">
-                    <Admin />
-                  </Route>
+                  {userFacade.hasRole(user, "user") ? (
+                    <Route path="/user">
+                      <User />
+                    </Route>) : ("")}
+                  {userFacade.hasRole(user, "admin") ? (
+                    <Route path="/admin">
+                      <Admin />
+                    </Route>) : ("")}
                 </Switch>
               </div>
             </div>
           </Router>
         )
       }
-    </div>
+    </div >
   )
 }
 
@@ -97,15 +104,17 @@ function App() {
   )
 }
 
-function Header(prop) {
+function Header({ user }) {
   return (
     <ul className="header">
-      <li>
-        <NavLink activeClassName="selected" to="/user">User</NavLink>
-      </li>
-      <li>
-        <NavLink activeClassName="selected" to="/admin">Admin</NavLink>
-      </li>
+      {userFacade.hasRole(user, "user") ? (
+        <li>
+          <NavLink activeClassName="selected" to="/user">User</NavLink>
+        </li>) : ("")}
+      {userFacade.hasRole(user, "admin") ? (
+        <li>
+          <NavLink activeClassName="selected" to="/admin">Admin</NavLink>
+        </li>) : ("")}
     </ul>
   )
 }
