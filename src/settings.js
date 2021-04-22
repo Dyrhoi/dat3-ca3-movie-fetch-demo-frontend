@@ -1,3 +1,3 @@
-const apiUrl = "https://3sem.dyrhoi.com/devops-starter"
+const apiUrl = "https://3sem.dyrhoi.com/startcode"
 
 export { apiUrl };

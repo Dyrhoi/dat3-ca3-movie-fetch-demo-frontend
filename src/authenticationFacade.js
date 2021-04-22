@@ -10,8 +10,6 @@ function handleHttpErrors(res) {
 }
 
 function apiFacade() {
-    /* Insert utility-methods from a latter step (d) here (REMEMBER to uncomment in the returned object when you do)*/
-
     const login = (user, password) => {
         const options = makeOptions("POST", true, { username: user, password: password });
         return fetch(URL + "/api/login", options)
@@ -62,8 +60,6 @@ const loggedIn = () => {
 const logout = () => {
     localStorage.removeItem("jwtToken");
 }
-
-
 
 const facade = apiFacade();
 

@@ -1,14 +1,17 @@
+import logo from './startcode-logo.png'
 import "bootstrap/dist/css/bootstrap.min.css"
-import facade from './apiFacade'
+import facade from './authenticationFacade'
 import React, { useState, useEffect } from "react"
 import * as userFacade from './user'
+import User from './pages/user'
+import Admin from './pages/admin'
+import Welcome from './pages/welcome'
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   NavLink,
 } from "react-router-dom";
-
 
 function LogIn({ login }) {
   const init = { username: "", password: "" };
@@ -23,32 +26,28 @@ function LogIn({ login }) {
   }
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onChange={onChange} >
-        <input placeholder="User Name" id="username" />
-        <input placeholder="Password" id="password" />
-        <button onClick={performLogin}>Login</button>
-      </form>
+    <div className="container" style={{ maxWidth: "800px" }}>
+      <img src={logo} alt="Logo" className="mx-auto d-block" />
+      <form onChange={onChange} onSubmit={performLogin}>
+        <div className="row align-self-center">
+          <div className="row mb-2">
+            <label for="username" className="col-sm-2 col-form-label">User name</label>
+            <div className="col-sm-10">
+              <input type="text" className="form-control" id="username" placeholder="User name" />
+            </div>
+          </div>
+          <div className="row mb-3">
+            <label for="password" className="col-sm-2 col-form-label">Password</label>
+            <div className="col-sm-10">
+              <input type="password" className="form-control" id="password" placeholder="Password" />
+            </div>
+          </div>
+        </div>
+        <button type="submit" className="btn btn-primary">Login</button>
+      </form><br />
+      <Welcome />
     </div>
   )
-
-}
-
-function LoggedIn() {
-  const [dataFromServer, setDataFromServer] = useState("Loading...")
-
-  useEffect(() => {
-    facade.fetchData().then(data => setDataFromServer(data.msg));
-  }, [])
-
-  return (
-    <div className="content">
-      <h2>Data Received from server</h2>
-      <h3>{dataFromServer}</h3>
-    </div>
-  )
-
 }
 
 function UserLogin() {
@@ -114,7 +113,7 @@ function Header({ user, logout }) {
               ) : ("")}
               <NavLink className="nav-link" activeClassName="" exact to="/" onClick={logout}>Logout</NavLink>
               <span className="navbar-text">
-                {user.username}
+                Logged in as: {user.username}
               </span>
             </div>
           </div>
@@ -123,23 +122,6 @@ function Header({ user, logout }) {
     </>
   )
 }
-
-function User() {
-  return (
-    <div>
-      This is users
-    </div>
-  )
-}
-
-function Admin() {
-  return (
-    <div>
-      This is admin
-    </div>
-  )
-}
-
 
 function App() {
   return (
