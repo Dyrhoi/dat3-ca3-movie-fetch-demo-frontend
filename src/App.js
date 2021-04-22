@@ -1,16 +1,12 @@
-import './App.css';
+import "bootstrap/dist/css/bootstrap.min.css"
 import facade from './apiFacade'
 import React, { useState, useEffect } from "react"
-import './styles/style1.css'
-import './styles/style2.css'
 import * as userFacade from './user'
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   NavLink,
-  useParams
 } from "react-router-dom";
 
 
@@ -56,28 +52,29 @@ function LoggedIn() {
 }
 
 function UserLogin() {
-  const [loggedIn, setLoggedIn] = useState(false)
   const [user, setUser] = useState(null)
   const logout = () => {
     facade.logout()
-    setLoggedIn(false)
     setUser(null);
   }
   const login = (user, pass) => {
     facade.login(user, pass)
       .then(res => {
-        setLoggedIn(true)
         setUser(userFacade.getInfo(facade.getToken()))
       });
   }
 
+  useEffect(() => {
+    setUser(userFacade.getInfo(facade.getToken()))
+  }, [])
+
   return (
-    <div className="header">
-      {!loggedIn ? (<LogIn login={login} />) :
+    <div>
+      {!user ? (<LogIn login={login} />) :
         (
-          < Router >
+          <Router>
             <div>
-              <Header user={user} />
+              <Header user={user} logout={logout} />
               <div>
                 <Switch>
                   {userFacade.hasRole(user, "user") ? (
@@ -98,30 +95,38 @@ function UserLogin() {
   )
 }
 
-function App() {
+function Header({ user, logout }) {
   return (
-    <UserLogin />
-  )
-}
-
-function Header({ user }) {
-  return (
-    <ul className="header">
-      {userFacade.hasRole(user, "user") ? (
-        <li>
-          <NavLink activeClassName="selected" to="/user">User</NavLink>
-        </li>) : ("")}
-      {userFacade.hasRole(user, "admin") ? (
-        <li>
-          <NavLink activeClassName="selected" to="/admin">Admin</NavLink>
-        </li>) : ("")}
-    </ul>
+    <>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container-fluid">
+          <a className="navbar-brand">Quick start code</a>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div className="navbar-nav">
+              {userFacade.hasRole(user, "user") ? (
+                <NavLink className="nav-link" activeClassName="active" to="/user">User</NavLink>
+              ) : ("")}
+              {userFacade.hasRole(user, "admin") ? (
+                <NavLink className="nav-link" activeClassName="active" to="/admin">Admin</NavLink>
+              ) : ("")}
+              <NavLink className="nav-link" activeClassName="" exact to="/" onClick={logout}>Logout</NavLink>
+              <span className="navbar-text">
+                {user.username}
+              </span>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </>
   )
 }
 
 function User() {
   return (
-    <div className="content">
+    <div>
       This is users
     </div>
   )
@@ -129,9 +134,18 @@ function User() {
 
 function Admin() {
   return (
-    <div className="content">
+    <div>
       This is admin
     </div>
+  )
+}
+
+
+function App() {
+  return (
+    <>
+      <UserLogin />
+    </>
   )
 }
 
